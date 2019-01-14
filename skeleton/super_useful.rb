@@ -29,12 +29,11 @@ def feed_me_a_fruit
     puts 'hey thats not a fruit! Thanks for the coffee, I will give you a try'
     retry
   rescue NotGivenFruitOrCoffeeError
-   puts "hey you didnt give me coffee or fruit!"
-   return 
+    puts "hey you didnt give me coffee or fruit!"
+    return
   end 
 
   puts "OMG, thanks so much for the #{maybe_fruit}!"
- 
 end  
 
 # PHASE 4
