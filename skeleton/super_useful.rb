@@ -1,25 +1,40 @@
 # PHASE 2
 def convert_to_int(str)
-  Integer(str)
+  begin
+    Integer(str)
+  rescue ArgumentError
+    nil
+  end
 end
 
 # PHASE 3
 FRUITS = ["apple", "banana", "orange"]
+class GivenCoffeeError < StandardError; end
+class NotGivenFruitOrCoffeeError < StandardError; end
 
 def reaction(maybe_fruit)
-  if FRUITS.include? maybe_fruit
-    puts "OMG, thanks so much for the #{maybe_fruit}!"
-  else 
-    raise StandardError 
-  end 
+  raise NotGivenFruitOrCoffeeError if !FRUITS.include?(maybe_fruit) &&
+  maybe_fruit != 'coffee'
+  raise GivenCoffeeError if maybe_fruit == "coffee"
 end
 
 def feed_me_a_fruit
   puts "Hello, I am a friendly monster. :)"
 
-  puts "Feed me a fruit! (Enter the name of a fruit:)"
-  maybe_fruit = gets.chomp
-  reaction(maybe_fruit) 
+  begin 
+    puts "Feed me a fruit! (Enter the name of a fruit:)"
+    maybe_fruit = gets.chomp
+    reaction(maybe_fruit) 
+  rescue GivenCoffeeError
+    puts 'hey thats not a fruit! Thanks for the coffee, I will give you a try'
+    retry
+  rescue NotGivenFruitOrCoffeeError
+   puts "hey you didnt give me coffee or fruit!"
+   return 
+  end 
+
+  puts "OMG, thanks so much for the #{maybe_fruit}!"
+ 
 end  
 
 # PHASE 4
@@ -44,3 +59,7 @@ class BestFriend
 end
 
 
+if __FILE__ == $PROGRAM_NAME
+  # convert_to_int('hello')
+  # feed_me_a_fruit
+end
