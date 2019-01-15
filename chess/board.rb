@@ -2,23 +2,22 @@ require_relative 'piece.rb'
 require_relative 'display.rb'
 require_relative 'errors.rb'
 
+require 'colorize'
+require 'byebug'
+
 class Board
   attr_accessor :grid
   def self.default_grid
-    empty_grid = Array.new(8) {Array.new(8)}
+    start_grid = Array.new(8) {Array.new(8) {NullPiece.instance}}
     (0..1).each do |row|
-      empty_grid[row].each_index {|col| empty_grid[row][col] = Piece.new(:black)} 
+      start_grid[row].each_index {|col| start_grid[row][col] = Piece.new(Piece::COLORS[0])} 
     end
 
     (6..7).each do |row|
-      empty_grid[row].each_index {|col| empty_grid[row][col] = Piece.new(:white)} 
+      start_grid[row].each_index {|col| start_grid[row][col] = Piece.new(Piece::COLORS[1])} 
     end
     
-    (2..5).each do |row|
-      empty_grid[row].each_index {|col| empty_grid[row][col] = NullPiece.new} 
-    end
-    
-    empty_grid
+    start_grid
   end
 
   def initialize
@@ -26,19 +25,28 @@ class Board
   end
 
   def move_piece(start_pos,end_pos)
-    raise NoPieceError if self.grid[start_pos].is_a?(NullPiece)
-    raise CannotMoveThereError if self.grid[end_pos].is_a?(Piece)
-    moving_piece = self.grid[start_pos]
-    self.grid[end_pos] = moving_piece
-    self.grid[start_pos] = NullPiece.new
+    if valid_move?(start_pos,end_pos)
+       moving_piece = self[start_pos]
+       self[end_pos] = moving_piece
+       self[start_pos] = NullPiece.new
+    end 
   end
+
+  # private 
+  def valid_move?(start_pos,end_pos) 
+      # raise NoPieceError if self[start_pos].is_a?(NullPiece)
+      # raise CannotAttackFriendlyError if self[start_pos].color == self[end_pos].color
+      # raise InvalidAttackError if 
+      # raise OffBoardError if 
+      true 
+  end 
 
   def [](pos)
     row, col = pos
     self.grid[row][col]
   end
 
-  def []=(piece)
+  def []=(pos,piece)
     row, col = pos
     self.grid[row][col] = piece
   end
@@ -46,4 +54,13 @@ end
 
 if __FILE__ == $PROGRAM_NAME
   board = Board.new
+  cursor = Cursor.new([0,0], board)
+  display = Display.new(board, cursor)
+  display.render
+  debugger
+  until cursor.selected
+    cursor.get_input
+    system('clear')
+    display.render
+  end
 end
