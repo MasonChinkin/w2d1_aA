@@ -1,6 +1,7 @@
-require_relative 'piece.rb'
-require_relative 'display.rb'
-require_relative 'errors.rb'
+require_relative 'piece'
+require_relative 'display'
+require_relative 'errors'
+require_relative 'cursor'
 
 require 'colorize'
 require 'byebug'
@@ -10,15 +11,23 @@ class Board
   def self.default_grid
     start_grid = Array.new(8) {Array.new(8) {NullPiece.instance}}
     (0..1).each do |row|
-      start_grid[row].each_index {|col| start_grid[row][col] = Piece.new(Piece::COLORS[0])} 
+      start_grid[row].each_index do |col|
+        start_grid[row][col] = Piece.generate(self, [row,col],:dark)
+      end
     end
 
     (6..7).each do |row|
-      start_grid[row].each_index {|col| start_grid[row][col] = Piece.new(Piece::COLORS[1])} 
+      start_grid[row].each_index do 
+        |col| start_grid[row][col] = Piece.generate(self, [row,col],:light)
+      end 
     end
     
     start_grid
   end
+
+  def populate_pieces 
+
+  end 
 
   def initialize
     @grid = Board.default_grid
@@ -50,6 +59,9 @@ class Board
     row, col = pos
     self.grid[row][col] = piece
   end
+  
+  
+
 end
 
 if __FILE__ == $PROGRAM_NAME
@@ -57,10 +69,12 @@ if __FILE__ == $PROGRAM_NAME
   cursor = Cursor.new([0,0], board)
   display = Display.new(board, cursor)
   display.render
-  debugger
+
   until cursor.selected
     cursor.get_input
     system('clear')
     display.render
   end
 end
+
+

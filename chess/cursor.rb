@@ -1,6 +1,4 @@
 require "io/console"
-require_relative 'board.rb'
-require_relative 'display.rb'
 
 KEYMAP = {
   " " => :space,
